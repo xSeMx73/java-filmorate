@@ -27,49 +27,42 @@ public class FilmController {
 
     @PostMapping
     public Film create(@RequestBody Film film) {
-        if (film.getName().isEmpty()) {
-            log.trace("Ошибка добавления фильма");
-            throw new ValidationException("Название фильма не может быть пустым");
-        } else if (film.getDescription().length() > 200) {
-            log.trace("Ошибка добавления фильма");
-            throw new ValidationException("Максимальная длина описания — 200 символов");
-        } else if (film.getDuration() == null || film.getDuration() < 0) {
-            log.trace("Ошибка добавления фильма");
-            throw new ValidationException("Продолжительность фильма должна быть положительным числом");
-        } else if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-            log.trace("Ошибка добавления фильма");
-            throw new ValidationException("Неверная дата релиза");
-        } else {
-            film.setId(getNextId());
-            films.put(film.getId(), film);
-            log.trace("Фильм " + film.getName() + " добавлен");
-            return film;
-        }
+     validate(film, "добавления");
+     return film;
     }
 
     @PutMapping
     public Film update(@RequestBody Film newFilm) {
     if (!films.containsKey(newFilm.getId())) {
         log.trace("Ошибка обновления фильма");
-            throw new ValidationException("Id должен быть указан");
-    } else if (newFilm.getName().isEmpty()) {
-        log.trace("Ошибка обновления фильма");
-            throw new ValidationException("Название фильма не может быть пустым");
-    } else if (newFilm.getDescription().length() > 200) {
-        log.trace("Ошибка обновления фильма");
-        throw new ValidationException("Максимальная длина описания — 200 символов");
-    } else if (newFilm.getDuration() == null || newFilm.getDuration() < 0) {
-        log.trace("Ошибка обновления фильма");
-        throw new ValidationException("Продолжительность фильма должна быть положительным числом");
-    } else if (newFilm.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-        log.trace("Ошибка обновления фильма");
-        throw new ValidationException("Неверная дата релиза");
+        throw new ValidationException("Id должен быть указан");
     } else {
-        films.put(newFilm.getId(), newFilm);
-        log.trace("Фильм " + newFilm.getName() + " обновлен");
+        validate(newFilm, "обнавления");
         return newFilm;
     }
   }
+
+    private void validate(Film film, String operation) {
+        if (film.getName().isEmpty()) {
+            log.trace("Ошибка " + operation + " фильма");
+            throw new ValidationException("Название фильма не может быть пустым");
+        } else if (film.getDescription().length() > 200) {
+            log.trace("Ошибка " + operation + " фильма");
+            throw new ValidationException("Максимальная длина описания — 200 символов");
+        } else if (film.getDuration() == null || film.getDuration() < 0) {
+            log.trace("Ошибка " + operation + " фильма");
+            throw new ValidationException("Продолжительность фильма должна быть положительным числом");
+        } else if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
+            log.trace("Ошибка " + operation + " фильма");
+            throw new ValidationException("Неверная дата релиза");
+        } else {
+           if (operation.equals("добавления")) {
+               film.setId(getNextId());
+           }
+            films.put(film.getId(), film);
+            log.trace("Фильм " + film.getName() + operation.substring(0,operation.length() - 2));
+        }
+    }
 
     private long getNextId() {
         long currentMaxId = films.keySet()

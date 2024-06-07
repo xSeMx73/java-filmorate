@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -24,31 +25,8 @@ public class UserController {
 
     @PostMapping
     public User create(@RequestBody User user) {
-        if (user.getEmail() == null || !user.getEmail().contains("@")) {
-            log.trace("Ошибка добавления пользователя");
-            throw new ValidationException("Неверно указана электронная почта");
-        }
-        for (User us : users.values()) {
-            if (us.getEmail().equals(user.getEmail())) {
-                log.trace("Ошибка добавления пользователя");
-                throw new ValidationException("Данная электронная почта уже используется");
-            }
-        }
-        if (user.getLogin() == null || user.getLogin().isBlank()) {
-            log.trace("Ошибка добавления пользователя");
-            throw new ValidationException("Логин не может быть пустым и содержать пробелы");
-
-        } else if (user.getBirthday().isAfter(LocalDate.now())) {
-            log.trace("Ошибка добавления пользователя");
-            throw new ValidationException("Неверная дата рождения");
-        }  else if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
-            user.setId(getNextId());
-            users.put(user.getId(), user);
-            log.trace("Пользователь " + user.getLogin() + " добавлен");
-            return user;
-
+       validate(user, "добавления");
+         return user;
     }
 
     @PutMapping
@@ -56,30 +34,40 @@ public class UserController {
         if (newUser.getId() == null || !users.containsKey(newUser.getId())) {
             log.trace("Ошибка обновления пользователя");
             throw new ValidationException("Неверный ID");
-        }
-        if (newUser.getEmail() != null && newUser.getEmail().contains("@")) {
-            for (User us : users.values()) {
-                if (us.getEmail().equals(newUser.getEmail())) {
-                    log.trace("Ошибка обновления пользователя");
-                    throw new ValidationException("Данная электронная почта уже используется");
-                }
-            }
         } else {
-            log.trace("Ошибка обновления пользователя");
+            validate(newUser,"обновления");
+        }
+            return newUser;
+    }
+
+    private void validate(User user, String operation) {
+        if (user.getEmail() == null || !user.getEmail().contains("@")) {
+            log.trace("Ошибка " + operation + " пользователя");
             throw new ValidationException("Неверно указана электронная почта");
         }
-        if (newUser.getLogin() == null || newUser.getLogin().isBlank()) {
-            log.trace("Ошибка обновления пользователя");
-            throw new ValidationException("Логин не может быть пустым и содержать пробелы");
-        } else if (newUser.getBirthday().isAfter(LocalDate.now())) {
-            log.trace("Ошибка обновления пользователя");
-            throw new ValidationException("Неверная дата рождения");
-        } else if (newUser.getName().isBlank()) {
-            newUser.setName(newUser.getLogin());
+        for (User us : users.values()) {
+            Optional<Boolean> optionalId = Optional.of(us.getId().equals(user.getId()));
+            if (us.getEmail().equals(user.getEmail()) && !optionalId.get()) {
+                log.trace("Ошибка " + operation + " пользователя");
+                throw new ValidationException("Данная электронная почта уже используется");
+            }
         }
-            users.put(newUser.getId(), newUser);
-        log.trace("Пользователь " + newUser.getLogin() + " обновлен");
-            return newUser;
+        if (user.getLogin() == null || user.getLogin().isBlank()) {
+            log.trace("Ошибка " + operation + " пользователя");
+            throw new ValidationException("Логин не может быть пустым и содержать пробелы");
+
+        } else if (user.getBirthday().isAfter(LocalDate.now())) {
+            log.trace("Ошибка " + operation + " пользователя");
+            throw new ValidationException("Неверная дата рождения");
+        }  else if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
+        if (operation.equals("добавления")) {
+            user.setId(getNextId());
+        }
+        users.put(user.getId(), user);
+        log.trace("Пользователь " + user.getLogin() + operation.substring(0,operation.length() - 2));
+
     }
 
     private long getNextId() {
