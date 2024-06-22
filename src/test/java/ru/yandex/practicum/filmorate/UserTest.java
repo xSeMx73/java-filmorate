@@ -101,12 +101,12 @@ public class UserTest {
         user6.setName("Name6");
         user6.setBirthday(LocalDate.of(2022, 2, 2));
         userController.create(user6);
-        userController.addFriend(user.getId(),user2.getId());
-        userController.addFriend(user3.getId(),user2.getId());
-        userController.addFriend(user.getId(),user4.getId());
-        userController.addFriend(user3.getId(),user4.getId());
-        userController.addFriend(user.getId(),user5.getId());
-        userController.addFriend(user.getId(),user6.getId());
+        userController.addFriend(user.getId(), user2.getId());
+        userController.addFriend(user3.getId(), user2.getId());
+        userController.addFriend(user.getId(), user4.getId());
+        userController.addFriend(user3.getId(), user4.getId());
+        userController.addFriend(user.getId(), user5.getId());
+        userController.addFriend(user.getId(), user6.getId());
         System.out.println("frinds user 1" + user.getFriends());
         System.out.println("frinds user 2" + user2.getFriends());
         System.out.println("frinds user 3" + user3.getFriends());
