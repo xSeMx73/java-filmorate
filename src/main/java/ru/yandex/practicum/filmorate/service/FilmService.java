@@ -12,7 +12,7 @@ import java.util.Set;
 public class FilmService implements FilmStorage {
     InMemoryFilmStorage filmStorage;
 
-    public FilmService(InMemoryFilmStorage filmStorage){
+    public FilmService(InMemoryFilmStorage filmStorage) {
         this.filmStorage = filmStorage;
     }
 

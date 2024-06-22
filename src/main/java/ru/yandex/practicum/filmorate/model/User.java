@@ -8,11 +8,11 @@ import java.util.Set;
 
 @Data
 public class User {
-  private Long id = 1L;
-  private String email;
-  private String login;
-  private LocalDate birthday;
-  private String name;
-  private Set<Long> friends = new HashSet<>();
+    private Long id = 1L;
+    private String email;
+    private String login;
+    private LocalDate birthday;
+    private String name;
+    private Set<Long> friends = new HashSet<>();
 
 }

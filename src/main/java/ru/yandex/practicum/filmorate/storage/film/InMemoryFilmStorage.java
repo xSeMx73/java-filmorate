@@ -34,7 +34,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     public Film updateFilm(Film film) {
         if (!films.containsKey(film.getId())) {
             log.trace("Ошибка обновления фильма");
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Id должен быть указан");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Id должен быть указан");
         } else {
             validate(film, "обновления");
             return film;
@@ -44,7 +44,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film addLike(Long userId, Long filmId) {
         if (userId == null || filmId == null || !userStorage.getUsers().containsKey(userId)
-                || !films.containsKey(filmId) || films.get(filmId).getLikes().contains(userId)){
+                || !films.containsKey(filmId) || films.get(filmId).getLikes().contains(userId)) {
             log.trace("Ошибка добавления лайка");
             throw new ValidationException("Неверный Id или вы уже ставили лайк");
         }
@@ -55,7 +55,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film deleteLike(Long userId, Long filmId) {
         if (userId == null || filmId == null || !userStorage.getUsers().containsKey(userId)
-                || !films.containsKey(filmId) || !films.get(filmId).getLikes().contains(userId)){
+                || !films.containsKey(filmId) || !films.get(filmId).getLikes().contains(userId)) {
             log.trace("Ошибка удаления лайка");
             throw new ValidationException("Неверный Id или вы не ставили лайк");
         }
@@ -65,9 +65,9 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Set<Film> topFilms(Long count) {
-    List<Map.Entry<Long, Film>> sortedFilms = new ArrayList<>(films.entrySet());
-    sortedFilms.sort((entry1, entry2) ->
-            Long.compare(entry2.getValue().getLikes().size(), entry1.getValue().getLikes().size()));
+        List<Map.Entry<Long, Film>> sortedFilms = new ArrayList<>(films.entrySet());
+        sortedFilms.sort((entry1, entry2) ->
+                Long.compare(entry2.getValue().getLikes().size(), entry1.getValue().getLikes().size()));
         return sortedFilms.stream()
                 .limit(count)
                 .map(Map.Entry::getValue)
@@ -78,16 +78,16 @@ public class InMemoryFilmStorage implements FilmStorage {
     private void validate(Film film, String operation) {
         if (film.getName().isEmpty()) {
             log.trace("Ошибка " + operation + " фильма");
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Название фильма не может быть пустым");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Название фильма не может быть пустым");
         } else if (film.getDescription().length() > 200) {
             log.trace("Ошибка " + operation + " фильма");
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Максимальная длина описания — 200 символов");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Максимальная длина описания — 200 символов");
         } else if (film.getDuration() == null || film.getDuration() < 0) {
             log.trace("Ошибка " + operation + " фильма");
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Продолжительность фильма должна быть положительным числом");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Продолжительность фильма должна быть положительным числом");
         } else if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
             log.trace("Ошибка " + operation + " фильма");
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Неверная дата релиза");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Неверная дата релиза");
         } else {
             if (operation.equals("добавления")) {
                 film.setId(getNextId());

@@ -52,10 +52,10 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public void deleteFriend(Long userId, Long friendId) {
-        if (userId == null || friendId == null ) {
+        if (userId == null || friendId == null) {
             log.trace("Ошибка удаления из друзей");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Неверный ID");
-        } else if (!users.containsKey(userId) || !users.get(userId).getFriends().contains(friendId)){
+        } else if (!users.containsKey(userId) || !users.get(userId).getFriends().contains(friendId)) {
             log.trace("Ошибка удаления из друзей");
             throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Неверный ID");
         }
@@ -73,12 +73,12 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public Set <Long> getCommonFriends(Long userId, Long otherUserId) {
+    public Set<Long> getCommonFriends(Long userId, Long otherUserId) {
         if (userId == null || otherUserId == null || !users.containsKey(userId) || !users.containsKey(otherUserId)) {
             log.trace("Ошибка поиска общих друзей");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Неверный ID");
         }
-        Set <Long> commonFriends = users.get(userId).getFriends();
+        Set<Long> commonFriends = users.get(userId).getFriends();
         commonFriends.retainAll(users.get(otherUserId).getFriends());
         return commonFriends;
     }

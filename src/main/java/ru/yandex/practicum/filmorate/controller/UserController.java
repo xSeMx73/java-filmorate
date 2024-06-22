@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.Collection;
 import java.util.Set;
-import java.util.Set;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -16,7 +15,7 @@ import java.util.Set;
 @RequestMapping("/users")
 public class UserController {
 
-   private final UserService userService;
+    private final UserService userService;
 
 
     @GetMapping
@@ -26,7 +25,7 @@ public class UserController {
 
     @PostMapping
     public User create(@RequestBody User user) {
-       return userService.createUser(user);
+        return userService.createUser(user);
 
     }
 
@@ -42,7 +41,7 @@ public class UserController {
 
     @DeleteMapping("/{userId}/friends/{friendId}")
     public void deleteFriend(@PathVariable Long userId, Long friendId) {
-         userService.deleteFriend(userId, friendId);
+        userService.deleteFriend(userId, friendId);
     }
 
     @GetMapping("/{userId}/friends")
