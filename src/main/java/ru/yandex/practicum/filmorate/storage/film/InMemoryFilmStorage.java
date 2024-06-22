@@ -6,17 +6,21 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 @Slf4j
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
 
-    InMemoryUserStorage userStorage;
+    UserService userService;
+    FilmService filmService;
     public final Map<Long, Film> films = new HashMap<>();
 
     @Override
@@ -31,6 +35,11 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
+    public Film getFilm(Long id) {
+        return films.get(id);
+    }
+
+    @Override
     public Film updateFilm(Film film) {
         if (!films.containsKey(film.getId())) {
             log.trace("Ошибка обновления фильма");
@@ -42,36 +51,23 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film addLike(Long userId, Long filmId) {
-        if (userId == null || filmId == null || !userStorage.getUsers().containsKey(userId)
-                || !films.containsKey(filmId) || films.get(filmId).getLikes().contains(userId)) {
-            log.trace("Ошибка добавления лайка");
-            throw new ValidationException("Неверный Id или вы уже ставили лайк");
-        }
-        films.get(filmId).getLikes().add(userId);
-        return films.get(filmId);
+    public void addLike(Long userId, Long filmId) {
+        filmService.addLike(userId, filmId);
     }
 
     @Override
-    public Film deleteLike(Long userId, Long filmId) {
-        if (userId == null || filmId == null || !userStorage.getUsers().containsKey(userId)
+    public void deleteLike(Long userId, Long filmId) {
+        if (userId == null || filmId == null || !userService.findAllUsers().contains(userService.getUser(userId))
                 || !films.containsKey(filmId) || !films.get(filmId).getLikes().contains(userId)) {
             log.trace("Ошибка удаления лайка");
             throw new ValidationException("Неверный Id или вы не ставили лайк");
         }
         films.get(filmId).getLikes().remove(userId);
-        return films.get(filmId);
     }
 
     @Override
     public Set<Film> topFilms(Long count) {
-        List<Map.Entry<Long, Film>> sortedFilms = new ArrayList<>(films.entrySet());
-        sortedFilms.sort((entry1, entry2) ->
-                Long.compare(entry2.getValue().getLikes().size(), entry1.getValue().getLikes().size()));
-        return sortedFilms.stream()
-                .limit(count)
-                .map(Map.Entry::getValue)
-                .collect(Collectors.toSet());
+        return filmService.topFilms(count);
     }
 
 

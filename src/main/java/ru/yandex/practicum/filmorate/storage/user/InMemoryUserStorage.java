@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -17,6 +18,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class InMemoryUserStorage implements UserStorage {
     private final Map<Long, User> users = new HashMap<>();
+    UserService userService;
 
     @Override
     public Collection<User> findAllUsers() {
@@ -41,46 +43,30 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public void addFriend(Long userId, Long friendId) {
-        if (userId == null || friendId == null || !users.containsKey(userId) || !users.containsKey(friendId)) {
-            log.trace("Ошибка добавления в друзья");
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Неверный ID");
-        }
-        users.get(userId).getFriends().add(friendId);
-        users.get(friendId).getFriends().add(userId);
+    public User addFriend(Long userId, Long friendId) {
+        userService.addFriend(userId, friendId);
+        return getUser(userId);
     }
 
     @Override
-    public void deleteFriend(Long userId, Long friendId) {
-        if (userId == null || friendId == null) {
-            log.trace("Ошибка удаления из друзей");
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Неверный ID");
-        } else if (!users.containsKey(userId) || !users.get(userId).getFriends().contains(friendId)) {
-            log.trace("Ошибка удаления из друзей");
-            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Неверный ID");
-        }
-        users.get(userId).getFriends().remove(friendId);
-        users.get(friendId).getFriends().remove(userId);
+    public User deleteFriend(Long userId, Long friendId) {
+        userService.deleteFriend(userId, friendId);
+        return getUser(userId);
     }
 
     @Override
-    public Set<Long> getUserFriends(Long userId) {
-        if (userId == null || !users.containsKey(userId) || users.get(userId).getFriends() == null) {
-            log.trace("Ошибка обновления пользователя");
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Неверный ID");
-        }
-        return users.get(userId).getFriends();
+    public Set<User> getUserFriends(Long userId) {
+        return userService.getUserFriends(userId);
     }
 
     @Override
-    public Set<Long> getCommonFriends(Long userId, Long otherUserId) {
-        if (userId == null || otherUserId == null || !users.containsKey(userId) || !users.containsKey(otherUserId)) {
-            log.trace("Ошибка поиска общих друзей");
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Неверный ID");
-        }
-        Set<Long> commonFriends = users.get(userId).getFriends();
-        commonFriends.retainAll(users.get(otherUserId).getFriends());
-        return commonFriends;
+    public Set<User> getCommonFriends(Long userId, Long otherUserId) {
+        return userService.getCommonFriends(userId, otherUserId);
+    }
+
+    @Override
+    public User getUser(Long id) {
+        return users.get(id);
     }
 
     private void validate(User user, String operation) {

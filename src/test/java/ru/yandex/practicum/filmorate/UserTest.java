@@ -107,16 +107,20 @@ public class UserTest {
         userController.addFriend(user3.getId(), user4.getId());
         userController.addFriend(user.getId(), user5.getId());
         userController.addFriend(user.getId(), user6.getId());
-        System.out.println("frinds user 1" + user.getFriends());
-        System.out.println("frinds user 2" + user2.getFriends());
-        System.out.println("frinds user 3" + user3.getFriends());
-        System.out.println("frinds user 4" + user4.getFriends());
-        System.out.println("frinds user 5" + user5.getFriends());
-        System.out.println("frinds user 6" + user6.getFriends());
+        System.out.println("friends user 1" + user.getFriends());
+        System.out.println("friends user 2" + user2.getFriends());
+        System.out.println("friends user 3" + user3.getFriends());
+        System.out.println("friends user 4" + user4.getFriends());
+        System.out.println("friends user 5" + user5.getFriends());
+        System.out.println("friends user 6" + user6.getFriends());
         System.out.println(userController.getUserFriends(1L));
         userController.deleteFriend(1L, 6L);
         System.out.println(userController.getUserFriends(1L));
-        System.out.println("frinds user 6" + user6.getFriends());
+        System.out.println("friends user 6" + user6.getFriends());
+        userController.deleteFriend(1L, 6L);
+        System.out.println(userController.getUser(1L));
+
+
     }
 
 }
