@@ -3,12 +3,13 @@ package ru.yandex.practicum.filmorate;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.controller.FilmController;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.time.LocalDate;
 
 public class FilmTest {
-
-    FilmController filmController = new FilmController();
+    FilmService filmService;
+    FilmController filmController = new FilmController(filmService);
 
     @Test
     void createTestNameFilm() {
