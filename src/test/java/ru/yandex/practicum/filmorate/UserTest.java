@@ -42,8 +42,8 @@ public class UserTest {
         user.setBirthday(LocalDate.of(2020, 1, 1));
         User user1 = userController.create(user);
         user1.setName("name3");
-
     }
+
     @Test
     void testAddFriend() {
         User user = new User();
