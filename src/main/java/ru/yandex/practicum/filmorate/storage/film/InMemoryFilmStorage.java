@@ -6,19 +6,18 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.service.UserService;
+
 
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
+
 
 @Slf4j
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
 
-    UserService userService;
     FilmService filmService;
     public final Map<Long, Film> films = new HashMap<>();
 
@@ -64,7 +63,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Set<Film> topFilms(Long count) {
+    public Collection<Film> topFilms(int count) {
         return filmService.topFilms(count);
     }
 

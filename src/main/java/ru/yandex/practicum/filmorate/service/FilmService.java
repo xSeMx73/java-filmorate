@@ -11,7 +11,7 @@ import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
-import java.util.Set;
+import java.util.Comparator;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -69,9 +69,12 @@ public class FilmService implements FilmStorage {
     }
 
     @Override
-    public Set<Film> topFilms(Long count) {
+    public Collection<Film> topFilms(int count) {
         return filmStorage.findAllFilms().stream()
+                .sorted(Comparator.comparing(Film::getName))
                 .sorted((film1, film2) -> film2.getLikes().size() - film1.getLikes().size())
-                .limit(count).collect(Collectors.toSet());
+                .limit(count)
+                .collect(Collectors.toList());
     }
+
 }

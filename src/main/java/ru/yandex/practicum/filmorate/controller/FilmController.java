@@ -7,7 +7,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.util.Collection;
-import java.util.Set;
+
 
 @Slf4j
 @RequiredArgsConstructor
@@ -48,7 +48,7 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public Set<Film> topFilms(@RequestParam(defaultValue = "10", required = false) Long count) {
+    public Collection<Film> topFilms(@RequestParam(defaultValue = "10", required = false) int count) {
         return filmService.topFilms(count);
     }
     //
