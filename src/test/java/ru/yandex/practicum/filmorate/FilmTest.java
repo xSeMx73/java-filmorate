@@ -68,8 +68,9 @@ public class FilmTest {
         Film film1 = filmController.create(film);
         film1.setId(1L);
     }
+
     @Test
-    void addLikeTest(){
+    void addLikeTest() {
         User user = new User();
         user.setEmail("111@111");
         user.setLogin("Login");
