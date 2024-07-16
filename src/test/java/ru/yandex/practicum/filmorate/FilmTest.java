@@ -163,11 +163,11 @@ public class FilmTest {
         filmController.addLike(6L, 1L);
         int c = 1;
         int t = 1;
-        for(Film f : filmController.findAll()){
+        for (Film f : filmController.findAll()) {
             System.out.printf("All #%s %s%n", t,f);
             t++;
         }
-        for(Film f : filmController.topFilms(10)){
+        for (Film f : filmController.topFilms(10)) {
             System.out.printf("Top #%s %s%n", c,f);
             c++;
         }
