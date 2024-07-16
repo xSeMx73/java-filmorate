@@ -1,8 +1,9 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
+import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
@@ -45,18 +46,26 @@ public class FilmService implements FilmStorage {
     }
 
     @Override
-    public void addLike(Long userId, Long filmId) {
-        if (userId == null || filmId == null || !userStorage.findAllUsers().contains(userStorage.getUser(userId))
-                || !filmStorage.findAllFilms().contains(getFilm(filmId))) {
+    public void addLike(Long filmId, Long userId) {
+        if (userId == null || filmId == null || !filmStorage.findAllFilms().contains(getFilm(filmId)) ||
+                filmStorage.getFilm(filmId).getLikes().contains(userId)) {
             log.trace("Ошибка добавления лайка");
-            throw new ValidationException("Неверный Id или вы уже ставили лайк");
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Неверный Id или вы уже ставили лайк");
+        } else if (!userStorage.findAllUsers().contains(userStorage.getUser(userId))) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Неверный Id или вы уже ставили лайк");
         }
+
         filmStorage.getFilm(filmId).getLikes().add(userId);
     }
 
     @Override
     public void deleteLike(Long userId, Long filmId) {
-        filmStorage.deleteLike(userId, filmId);
+        if (userId == null || filmId == null || !userStorage.findAllUsers().contains(userStorage.getUser(userId))
+                || !filmStorage.findAllFilms().contains(getFilm(filmId)) || !filmStorage.getFilm(filmId).getLikes().contains(userId)) {
+            log.trace("Ошибка удаления лайка");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Неверный Id или вы не ставили лайк");
+        }
+        filmStorage.getFilm(filmId).getLikes().remove(userId);
     }
 
     @Override

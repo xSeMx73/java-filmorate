@@ -37,20 +37,20 @@ public class FilmController {
         return filmService.getFilm(id);
     }
 
-    @PutMapping("/{filmId}/like/{userId}")
-    public void addLike(@RequestBody Long filmId,@RequestBody Long userId) {
-         filmService.addLike(filmId, userId);
+    @PutMapping("/{id}/like/{userId}")
+    public void addLike(@PathVariable Long id, @PathVariable Long userId) {
+        filmService.addLike(id, userId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
-    public void deleteLike(@RequestBody Long id,@RequestBody Long userId) {
+    public void deleteLike(@PathVariable Long id, @PathVariable Long userId) {
         filmService.deleteLike(userId, id);
     }
 
-    @GetMapping("/popular?count={count}")
-    public Set<Film> topFilms(@RequestParam(value = "count", defaultValue = "10", required = false) Long count) {
+    @GetMapping("/popular")
+    public Set<Film> topFilms(@RequestParam(defaultValue = "10", required = false) Long count) {
         return filmService.topFilms(count);
     }
- //
+    //
 
 }

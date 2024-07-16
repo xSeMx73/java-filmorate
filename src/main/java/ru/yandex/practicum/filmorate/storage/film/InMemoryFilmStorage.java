@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -36,6 +35,10 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film getFilm(Long id) {
+        if (id == null || !films.containsKey(id)) {
+            log.trace("Неверный Id фильма");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Id должен быть указан");
+        }
         return films.get(id);
     }
 
@@ -57,12 +60,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public void deleteLike(Long userId, Long filmId) {
-        if (userId == null || filmId == null || !userService.findAllUsers().contains(userService.getUser(userId))
-                || !films.containsKey(filmId) || !films.get(filmId).getLikes().contains(userId)) {
-            log.trace("Ошибка удаления лайка");
-            throw new ValidationException("Неверный Id или вы не ставили лайк");
-        }
-        films.get(filmId).getLikes().remove(userId);
+        filmService.deleteLike(userId, filmId);
     }
 
     @Override

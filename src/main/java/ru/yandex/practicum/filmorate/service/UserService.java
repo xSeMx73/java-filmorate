@@ -44,7 +44,7 @@ public class UserService implements UserStorage {
     }
 
     @Override
-    public User addFriend(Long userId, Long friendId) {
+    public void addFriend(Long userId, Long friendId) {
         if (userId == null || friendId == null || !userStorage.findAllUsers().contains(getUser(userId))
                 || !userStorage.findAllUsers().contains(getUser(friendId))) {
             log.trace("Ошибка добавления в друзья");
@@ -52,11 +52,10 @@ public class UserService implements UserStorage {
         }
         getUser(userId).getFriends().add(friendId);
         getUser(friendId).getFriends().add(userId);
-        return getUser(userId);
     }
 
     @Override
-    public User deleteFriend(Long userId, Long friendId) {
+    public void deleteFriend(Long userId, Long friendId) {
         if (userId == null || friendId == null) {
             log.trace("Ошибка удаления из друзей");
             throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Неверный ID");
@@ -67,7 +66,6 @@ public class UserService implements UserStorage {
             getUser(userId).getFriends().remove(friendId);
             getUser(friendId).getFriends().remove(userId);
         }
-        return userStorage.getUser(userId);
     }
 
     @Override
@@ -93,8 +91,4 @@ public class UserService implements UserStorage {
         return commonFriends;
     }
 
-//    public boolean validateForFriend(Long userId, Long friendId) {
-//        return userId != null || friendId != null || userStorage.findAllUsers().contains(getUser(userId))
-//                || userStorage.findAllUsers().contains(getUser(friendId));
-//    }
 }
