@@ -64,6 +64,10 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User getUser(Long id) {
+        if (id == null || !users.containsKey(id)) {
+            log.trace("Неверный Id пользователя");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Id должен быть указан");
+        }
         return users.get(id);
     }
 

@@ -45,13 +45,13 @@ public class UserService implements UserStorage {
 
     @Override
     public void addFriend(Long userId, Long friendId) {
-        if (userId == null || friendId == null || !userStorage.findAllUsers().contains(getUser(userId))
-                || !userStorage.findAllUsers().contains(getUser(friendId))) {
+        if (userId == null || friendId == null || userStorage.getUser(userId) == null
+                || userStorage.getUser(friendId) == null) {
             log.trace("Ошибка добавления в друзья");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Неверный ID");
         }
-        getUser(userId).getFriends().add(friendId);
-        getUser(friendId).getFriends().add(userId);
+        userStorage.getUser(userId).getFriends().add(friendId);
+        userStorage.getUser(friendId).getFriends().add(userId);
     }
 
     @Override
@@ -59,18 +59,18 @@ public class UserService implements UserStorage {
         if (userId == null || friendId == null) {
             log.trace("Ошибка удаления из друзей");
             throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Неверный ID");
-        } else if (!findAllUsers().contains(getUser(userId)) || !findAllUsers().contains(getUser(friendId))) {
+        } else if (userStorage.getUser(userId) == null || userStorage.getUser(friendId) == null) {
             log.trace("Ошибка удаления из друзей");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Неверный ID");
         } else {
-            getUser(userId).getFriends().remove(friendId);
-            getUser(friendId).getFriends().remove(userId);
+            userStorage.getUser(userId).getFriends().remove(friendId);
+            userStorage.getUser(friendId).getFriends().remove(userId);
         }
     }
 
     @Override
     public Set<User> getUserFriends(Long userId) {
-        if (userId == null || !userStorage.findAllUsers().contains(getUser(userId))) {
+        if (userId == null || userStorage.getUser(userId) == null) {
             log.trace("Ошибка запроса друзей пользователя");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Неверный ID");
         }
@@ -81,8 +81,8 @@ public class UserService implements UserStorage {
 
     @Override
     public Set<User> getCommonFriends(Long userId, Long otherUserId) {
-        if (userId == null || otherUserId == null || !userStorage.findAllUsers().contains(userStorage.getUser(userId))
-                || !userStorage.findAllUsers().contains(userStorage.getUser(otherUserId))) {
+        if (userId == null || otherUserId == null || userStorage.getUser(userId) == null
+                || getUser(otherUserId) == null) {
             log.trace("Ошибка поиска общих друзей");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Неверный ID");
         }

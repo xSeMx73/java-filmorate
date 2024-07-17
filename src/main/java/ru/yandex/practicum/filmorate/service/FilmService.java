@@ -11,7 +11,6 @@ import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -47,21 +46,18 @@ public class FilmService implements FilmStorage {
 
     @Override
     public void addLike(Long filmId, Long userId) {
-        if (userId == null || filmId == null || !filmStorage.findAllFilms().contains(getFilm(filmId)) ||
-                filmStorage.getFilm(filmId).getLikes().contains(userId)) {
+        if (userId == null || filmId == null || userStorage.getUser(userId) == null ||
+            filmStorage.getFilm(filmId).getLikes().contains(userId)) {
             log.trace("Ошибка добавления лайка");
             throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Неверный Id или вы уже ставили лайк");
-        } else if (!userStorage.findAllUsers().contains(userStorage.getUser(userId))) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Неверный Id или вы уже ставили лайк");
         }
-
         filmStorage.getFilm(filmId).getLikes().add(userId);
     }
 
     @Override
     public void deleteLike(Long userId, Long filmId) {
-        if (userId == null || filmId == null || !userStorage.findAllUsers().contains(userStorage.getUser(userId))
-                || !filmStorage.findAllFilms().contains(getFilm(filmId)) || !filmStorage.getFilm(filmId).getLikes().contains(userId)) {
+        if (userId == null || filmId == null || userStorage.getUser(userId) == null
+                || filmStorage.getFilm(filmId) == null || !filmStorage.getFilm(filmId).getLikes().contains(userId)) {
             log.trace("Ошибка удаления лайка");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Неверный Id или вы не ставили лайк");
         }
@@ -71,7 +67,6 @@ public class FilmService implements FilmStorage {
     @Override
     public Collection<Film> topFilms(int count) {
         return filmStorage.findAllFilms().stream()
-                .sorted(Comparator.comparing(Film::getName))
                 .sorted((film1, film2) -> film2.getLikes().size() - film1.getLikes().size())
                 .limit(count)
                 .collect(Collectors.toList());
