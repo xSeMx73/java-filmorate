@@ -6,7 +6,8 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.Collection;
-import java.util.Set;
+import java.util.Optional;
+
 
 @RequiredArgsConstructor
 @RestController
@@ -26,7 +27,7 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}")
-    public User getUser(@PathVariable Long id) {
+    public Optional<User> getUser(@PathVariable Long id) {
         return userService.getUser(id);
     }
 
@@ -46,13 +47,13 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/friends")
-    public Set<User> getUserFriends(@PathVariable Long userId) {
+    public Collection<User> getUserFriends(@PathVariable Long userId) {
         return userService.getUserFriends(userId);
 
     }
 
     @GetMapping("/{userId}/friends/common/{otherUserId}")
-    public Set<User> getCommonFriends(@PathVariable Long userId, @PathVariable Long otherUserId) {
+    public Collection<User> getCommonFriends(@PathVariable Long userId, @PathVariable Long otherUserId) {
         return userService.getCommonFriends(userId, otherUserId);
     }
 }
