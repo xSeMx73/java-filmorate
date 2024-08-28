@@ -12,10 +12,19 @@ import java.util.*;
 @Repository
 public class FilmRepository extends BaseRepository<Film> {
 
-    private static final String FIND_ALL_QUERY = "SELECT * FROM FILMS";
+    private static final String FIND_ALL_QUERY = "SELECT f.*, m.NAME, fg.GENRE_ID, g.NAME " +
+            "FROM FILMS f JOIN MPA m ON f.MPA_ID = m.MPA_ID " +
+            "LEFT JOIN FILM_GENRES fg ON f.FILM_ID = fg.FILM_ID " +
+            "LEFT JOIN GENRES g ON fg.GENRE_ID = g.GENRE_ID " +
+            "LEFT JOIN FILM_LIKES fl ON f.FILM_ID=fl.FILM_ID";
 
-    private static final String FIND_ONE_QUERY = "SELECT * FROM FILMS " +
-            "WHERE FILM_ID = ?";
+    private static final String FIND_ONE_QUERY = "SELECT f.*, m.NAME, fg.GENRE_ID, g.NAME " +
+            "FROM FILMS f JOIN MPA m ON f.MPA_ID = m.MPA_ID " +
+            "LEFT JOIN FILM_GENRES fg ON f.FILM_ID = fg.FILM_ID " +
+            "LEFT JOIN GENRES g ON fg.GENRE_ID = g.GENRE_ID " +
+            "LEFT JOIN FILM_LIKES fl ON f.FILM_ID=fl.FILM_ID " +
+            "WHERE f.FILM_ID = ? " +
+            "LIMIT 1";
 
     private static final String INSERT_QUERY = "INSERT INTO FILMS (NAME, " +
             "RELEASE_DATE, MPA_ID, DURATION, DESCRIPTION)" +
@@ -64,8 +73,9 @@ public class FilmRepository extends BaseRepository<Film> {
     }
 
 
-    public Collection<Film> findAllFilms() {
-        return super.findMany(FIND_ALL_QUERY);
+    public List<Film> findAllFilms() {
+        Set<Film> setFilms = new LinkedHashSet<>(super.findMany(FIND_ALL_QUERY));
+        return setFilms.stream().toList();
     }
 
 
@@ -78,6 +88,7 @@ public class FilmRepository extends BaseRepository<Film> {
                 film.getDuration(),
                 film.getDescription()
         );
+
         long id = jdbc.queryForObject(SELECT_FOR_ID_QUERY, Long.class);
         film.setId(id);
         LinkedHashSet<Genre> genres = film.getGenres();
@@ -86,6 +97,7 @@ public class FilmRepository extends BaseRepository<Film> {
             super.insert(INSERT_FILM_GENRES, film.getId(), genre.getId());
         }
         return film;
+
     }
 
 
@@ -107,6 +119,7 @@ public class FilmRepository extends BaseRepository<Film> {
         super.delete(DELETE_FILM_GENRES, film.getId());
         for (Genre genre : genres) {
             super.insert(INSERT_FILM_GENRES, film.getId(), genre.getId());
+            break;
         }
         return film;
     }

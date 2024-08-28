@@ -73,7 +73,7 @@ public class FilmServiceImp implements FilmService {
     public void deleteLike(Long userId, Long filmId) {
         Optional<Film> film = filmRepository.getFilm(filmId);
         if (film.isEmpty() || userId == null || filmId == null || userRepository.getUser(userId).isEmpty()
-                || filmRepository.getFilm(filmId).isEmpty() || !film.get().getLikes().contains(userId)) {
+                || !film.get().getLikes().contains(userId)) {
             log.trace("Ошибка удаления лайка");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Неверный Id или вы не ставили лайк");
         }

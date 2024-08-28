@@ -7,14 +7,19 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 
 
 @Repository
 public class UserRepository extends BaseRepository<User> {
-    private static final String FIND_ALL_QUERY = "SELECT * FROM USERS";
-    private static final String FIND_ONE_QUERY = "SELECT * FROM USERS where USER_ID = ?";
+    private static final String FIND_ALL_QUERY = "SELECT u.*, f.FRIEND_ID FROM USERS u LEFT JOIN FRIENDSHIPS f" +
+            " ON f.USER_ID = u.USER_ID";
+    private static final String FIND_ONE_QUERY = "SELECT u.*, f.FRIEND_ID FROM USERS u LEFT JOIN FRIENDSHIPS f" +
+            " ON f.USER_ID = u.USER_ID" +
+            " WHERE u.USER_ID = ? " +
+            "LIMIT 1";
     protected static final String INSERT_USER_QUERY = "INSERT INTO USERS (NAME, EMAIL, LOGIN, BIRTHDAY)" +
             " values (?, ?, ?, ?)";
     private static final String SELECT_FOR_ID_QUERY = "SELECT USER_ID FROM USERS where EMAIL = ?";
@@ -56,7 +61,7 @@ public class UserRepository extends BaseRepository<User> {
 
 
     public Collection<User> findAllUsers() {
-        return super.findMany(FIND_ALL_QUERY);
+        return new LinkedHashSet<>(super.findMany(FIND_ALL_QUERY));
     }
 
     public User createUser(User user) {

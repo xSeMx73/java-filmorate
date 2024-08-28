@@ -19,18 +19,17 @@ public class MPAService {
         this.mpaRepository = mpaRepository;
     }
 
-
     public Collection<MPA> findAllMPA() {
         return mpaRepository.findAllMPA();
     }
 
     public Optional<MPA> findOneMPA(Long id) {
         Optional<MPA> mpa = mpaRepository.findOneMPA(id);
-        if (mpa.isEmpty() || mpaRepository.findAllMPA().size() < id) {
+        if (mpa.isEmpty()) {
             log.trace("Рейтинг MPA не неайден");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Рейтинг MPA не неайден");
         } else {
-            return mpaRepository.findOneMPA(id);
+            return mpa;
         }
     }
 }

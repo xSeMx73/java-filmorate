@@ -20,18 +20,17 @@ public class GenreService {
         this.genreRepository = genreRepository;
     }
 
-
     public Collection<Genre> findAllGenres() {
         return genreRepository.findAllGenres();
     }
 
     public Optional<Genre> findOneGenre(Long id) {
         Optional<Genre> genre = genreRepository.findOneGenre(id);
-        if (genre.isEmpty() || genreRepository.findAllGenres().contains(genre)) {
+        if (genre.isEmpty()) {
             log.trace("Жанр не неайден");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Неверный Id жанра");
         } else {
-            return genreRepository.findOneGenre(id);
+            return genre;
         }
     }
 }

@@ -41,11 +41,10 @@ public class UserServiceImp implements UserService {
 
     @Override
     public User updateUser(User user) {
+        validate(user, "обновления");
         if (user.getId() == null || userRepository.getUser(user.getId()).isEmpty()) {
             log.trace("Ошибка обновления пользователя");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Неверный ID");
-        } else {
-            validate(user, "обновления");
         }
         return userRepository.updateUser(user);
     }
